@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1116">
+<title>Cinta</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icono-192.png">
+<style>
+  :root { --fondo:#0e1116; --tarjeta:#171b22; --texto:#f2f4f7; --suave:#8b93a1; --acento:#ff4d2e; --ok:#3ecf8e; --mal:#ff5d5d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--fondo); color:var(--texto); font-family:system-ui, -apple-system, Roboto, sans-serif;
+         padding:16px; padding-top:max(16px, env(safe-area-inset-top)); }
+  h1 { font-size:15px; letter-spacing:.12em; text-transform:uppercase; color:var(--suave); margin:0 0 14px; font-weight:600; }
+  .fila { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+  .dato { background:var(--tarjeta); border-radius:14px; padding:14px 14px 12px; }
+  .dato .et { font-size:12px; color:var(--suave); text-transform:uppercase; letter-spacing:.08em; }
+  .dato .v { font-size:44px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1.1; margin-top:4px; }
+  .dato .u { font-size:15px; color:var(--suave); font-weight:500; margin-left:4px; }
+  .grande .v { font-size:64px; }
+  button { width:100%; border:0; border-radius:14px; padding:18px; font-size:18px; font-weight:700; margin-bottom:10px;
+           background:var(--acento); color:white; }
+  button.hecho { background:var(--tarjeta); color:var(--ok); }
+  #estado { font-size:13px; color:var(--suave); line-height:1.6; background:var(--tarjeta); border-radius:14px; padding:12px 14px; }
+  .ok { color:var(--ok); } .mal { color:var(--mal); }
+</style>
+</head>
+<body>
+<h1>Cinta · prueba de lectura</h1>
+
+<button id="bCinta">Conectar cinta</button>
+<button id="bPulso">Conectar pulso</button>
+
+<div class="fila">
+  <div class="dato grande"><div class="et">Velocidad</div><div class="v"><span id="vel">–</span><span class="u">km/h</span></div></div>
+  <div class="dato grande"><div class="et">Pulso</div><div class="v"><span id="fc">–</span><span class="u">ppm</span></div></div>
+</div>
+<div class="fila">
+  <div class="dato"><div class="et">Ritmo</div><div class="v"><span id="ritmo">–</span><span class="u">/km</span></div></div>
+  <div class="dato"><div class="et">Distancia</div><div class="v"><span id="dist">–</span><span class="u">km</span></div></div>
+</div>
+<div class="fila">
+  <div class="dato"><div class="et">Tiempo (cinta)</div><div class="v"><span id="tiempo">–</span></div></div>
+  <div class="dato"><div class="et">Inclinación</div><div class="v"><span id="incl">–</span><span class="u">%</span></div></div>
+</div>
+
+<div id="estado"></div>
+
+<script>
+// PRUEBA DE SOLO LECTURA: no escribe nada en la cinta (no toca el Control Point 0x2AD9).
+const $ = id => document.getElementById(id);
+const lineas = [];
+function log(t, clase) {
+  const h = new Date().toLocaleTimeString("es-ES");
+  lineas.unshift(`<div class="${clase || ""}">${h} · ${t}</div>`);
+  $("estado").innerHTML = lineas.slice(0, 12).join("");
+}
+const mmss = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+
+// --- Pantalla siempre encendida ---
+let bloqueo = null;
+async function pantallaEncendida() {
+  if (!("wakeLock" in navigator)) { log("Este navegador no deja mantener la pantalla encendida", "mal"); return; }
+  try {
+    bloqueo = await navigator.wakeLock.request("screen");
+    log("Pantalla: se mantiene encendida ✓", "ok");
+    bloqueo.addEventListener("release", () => log("Pantalla: se soltó el bloqueo"));
+  } catch (e) { log("Pantalla: no se pudo bloquear (" + e.message + ")", "mal"); }
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && (bloqueo === null || bloqueo.released)) pantallaEncendida();
+});
+
+// --- Treadmill Data (0x2ACD), campos según los flags ---
+function leerCinta(dv) {
+  const f = dv.getUint16(0, true); let i = 2; const r = {};
+  if (!(f & 1)) { r.vel = dv.getUint16(i, true) / 100; i += 2; }
+  if (f & 2) i += 2;                                   // velocidad media
+  if (f & 4) { r.dist = dv.getUint16(i, true) + (dv.getUint8(i + 2) << 16); i += 3; }
+  if (f & 8) { r.incl = dv.getInt16(i, true) / 10; i += 4; }
+  if (f & 16) i += 4;                                  // desnivel
+  if (f & 32) i += 1;                                  // ritmo instantáneo
+  if (f & 64) i += 1;                                  // ritmo medio
+  if (f & 128) i += 5;                                 // energía
+  if (f & 256) { r.fc = dv.getUint8(i); i += 1; }
+  if (f & 512) i += 1;                                 // MET
+  if (f & 1024) { r.t = dv.getUint16(i, true); i += 2; }
+  return r;
+}
+
+$("bCinta").onclick = async () => {
+  if (!navigator.bluetooth) { log("Este navegador no tiene Bluetooth web. Ábrelo en Chrome de Android.", "mal"); return; }
+  try {
+    const disp = await navigator.bluetooth.requestDevice({ filters: [{ services: [0x1826] }, { namePrefix: "REEBOK" }], optionalServices: [0x1826] });
+    log("Conectando a " + disp.name + "…");
+    const srv = await disp.gatt.connect();
+    const ftms = await srv.getPrimaryService(0x1826);
+    const td = await ftms.getCharacteristic(0x2ACD);
+    td.addEventListener("characteristicvaluechanged", ev => {
+      const r = leerCinta(ev.target.value);
+      if (r.vel !== undefined) {
+        $("vel").textContent = r.vel.toFixed(1);
+        $("ritmo").textContent = r.vel > 0.5 ? mmss(3600 / r.vel) : "–";
+      }
+      if (r.dist !== undefined) $("dist").textContent = (r.dist / 1000).toFixed(2);
+      if (r.incl !== undefined) $("incl").textContent = r.incl.toFixed(0);
+      if (r.t !== undefined) $("tiempo").textContent = mmss(r.t);
+    });
+    await td.startNotifications();
+    disp.addEventListener("gattserverdisconnected", () => { log("La cinta se ha desconectado", "mal"); $("bCinta").className = ""; $("bCinta").textContent = "Conectar cinta"; });
+    $("bCinta").className = "hecho"; $("bCinta").textContent = "Cinta conectada ✓";
+    log("Cinta conectada: " + disp.name, "ok");
+    pantallaEncendida();
+  } catch (e) { log("Cinta: " + e.message, "mal"); }
+};
+
+// --- Pulso (servicio estándar 0x180D, característica 0x2A37) ---
+$("bPulso").onclick = async () => {
+  if (!navigator.bluetooth) { log("Este navegador no tiene Bluetooth web.", "mal"); return; }
+  try {
+    const disp = await navigator.bluetooth.requestDevice({ filters: [{ services: ["heart_rate"] }] });
+    log("Conectando a " + disp.name + "…");
+    const srv = await disp.gatt.connect();
+    const hr = await (await srv.getPrimaryService("heart_rate")).getCharacteristic("heart_rate_measurement");
+    hr.addEventListener("characteristicvaluechanged", ev => {
+      const dv = ev.target.value; const f = dv.getUint8(0);
+      $("fc").textContent = (f & 1) ? dv.getUint16(1, true) : dv.getUint8(1);
+    });
+    await hr.startNotifications();
+    disp.addEventListener("gattserverdisconnected", () => { log("El pulsómetro se ha desconectado", "mal"); $("bPulso").className = ""; $("bPulso").textContent = "Conectar pulso"; });
+    $("bPulso").className = "hecho"; $("bPulso").textContent = "Pulso conectado ✓";
+    log("Pulso conectado: " + disp.name, "ok");
+    pantallaEncendida();
+  } catch (e) { log("Pulso: " + e.message, "mal"); }
+};
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+log("Listo. Pulsa «Conectar cinta» y luego «Conectar pulso».");
+</script>
+</body>
+</html>
