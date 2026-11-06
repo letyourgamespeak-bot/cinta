@@ -8,17 +8,67 @@
   ],
   "entrenos": [
     {
+      "id": "prueba-bloques-suave",
+      "nombre": "Prueba: bloques suaves (víspera de carrera)",
+      "nota": "Para estrenar la app y la exportación a COROS el sábado, después de la activación. Carga mínima: trote muy suave y andar. Dura más de 25 min a propósito: COROS dice rechazar archivos de menos de 20 KB. Con el reloj grabando a la vez en modo cinta.",
+      "bajada_s": 20,
+      "pasos": [
+        {
+          "tipo": "calentamiento",
+          "libre": true
+        },
+        {
+          "repetir": 4,
+          "pasos": [
+            {
+              "tipo": "serie",
+              "min": 3,
+              "kmh": 9.5
+            },
+            {
+              "tipo": "recuperacion",
+              "min": 2,
+              "kmh": 6.0
+            }
+          ]
+        },
+        {
+          "tipo": "calma",
+          "min": 3,
+          "kmh": 6.0
+        }
+      ]
+    },
+    {
       "id": "prueba-sistema",
       "nombre": "Prueba del sistema",
       "nota": "Para estrenar la app con el reloj grabando a la vez. Calentamiento a tu aire, tres cambios cortos y vuelta a la calma.",
       "bajada_s": 20,
       "pasos": [
-        { "tipo": "calentamiento", "libre": true },
-        { "repetir": 3, "pasos": [
-          { "tipo": "serie", "min": 1, "kmh": 12.0 },
-          { "tipo": "recuperacion", "min": 1, "kmh": 9.0 }
-        ]},
-        { "tipo": "calma", "min": 3, "kmh": 9.0 }
+        {
+          "tipo": "calentamiento",
+          "libre": true
+        },
+        {
+          "repetir": 3,
+          "pasos": [
+            {
+              "tipo": "serie",
+              "min": 1,
+              "kmh": 12.0
+            },
+            {
+              "tipo": "recuperacion",
+              "min": 1,
+              "kmh": 9.0
+            }
+          ]
+        },
+        {
+          "tipo": "calma",
+          "min": 3,
+          "kmh": 9.0
+        }
       ]
     }
   ]
