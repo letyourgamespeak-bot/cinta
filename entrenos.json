@@ -1,0 +1,25 @@
+{
+  "_formato": [
+    "Biblioteca de entrenos SIN fecha. Cada paso lleva UNA duración: 'min' (minutos), 's' (segundos) o 'm' (metros de la cinta),",
+    "o 'libre': true (lo terminas tú con «Siguiente»). Y UNA intensidad: 'ritmo' ('4:30' por km) o 'kmh' (velocidad).",
+    "Un paso libre puede no llevar intensidad: la cinta no se toca y la llevas tú con sus botones.",
+    "'repetir': N con 'pasos' repite el bloque. 'incl' (%) es opcional. 'bajada_s': segundos de la bajada progresiva",
+    "cuando un paso es más lento que el anterior (por defecto 20). La cinta va de 1,0 a 18,0 km/h de 0,1 en 0,1."
+  ],
+  "entrenos": [
+    {
+      "id": "prueba-sistema",
+      "nombre": "Prueba del sistema",
+      "nota": "Para estrenar la app con el reloj grabando a la vez. Calentamiento a tu aire, tres cambios cortos y vuelta a la calma.",
+      "bajada_s": 20,
+      "pasos": [
+        { "tipo": "calentamiento", "libre": true },
+        { "repetir": 3, "pasos": [
+          { "tipo": "serie", "min": 1, "kmh": 12.0 },
+          { "tipo": "recuperacion", "min": 1, "kmh": 9.0 }
+        ]},
+        { "tipo": "calma", "min": 3, "kmh": 9.0 }
+      ]
+    }
+  ]
+}
