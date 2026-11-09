@@ -9,8 +9,8 @@
   "entrenos": [
     {
       "id": "rodaje-facil-40",
-      "nombre": "Rodaje fácil 40′",
-      "nota": "Primera sesión real con la app, con el reloj grabando a la vez en modo cinta. 5′ a 10,0 para entrar, 32′ a 10,9 (5:30/km, el ritmo de tu cinta del 28-10) y 3′ a 9,0 de vuelta a la calma. Es por sensaciones: si te va duro o fácil, ajústalo con ±0,1.",
+      "nombre": "Rodaje fácil ~40′ (largo libre)",
+      "nota": "Primera sesión real con la app, con el reloj grabando a la vez en modo cinta. 5′ a 10,0 para entrar; el rodaje a 10,9 (5:30/km) es LIBRE: dura lo que quieras (unos 32′ para 40′ en total) y pasas a la vuelta a la calma con «Siguiente». Luego 3′ a 9,0. Es por sensaciones: si te va duro o fácil, ajústalo con ±0,1.",
       "bajada_s": 20,
       "pasos": [
         {
@@ -20,8 +20,8 @@
         },
         {
           "tipo": "rodaje",
-          "min": 32,
-          "kmh": 10.9
+          "kmh": 10.9,
+          "libre": true
         },
         {
           "tipo": "calma",
