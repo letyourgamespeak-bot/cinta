@@ -208,7 +208,7 @@ function pintarInicio() {
   const ses = leer("cinta.sesiones", []);
   $("sesiones").innerHTML = ses.length ? ses.slice().reverse().map(s => {
     const f = new Date(s.inicio);
-    return `<div class="sesion"><div><b>${esc(s.nombre)}</b><span>${f.toLocaleDateString("es-ES")} ${f.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })} · ${coma(s.muestras.at(-1)[1] / 1000, 2)} km</span></div><button class="mini" data-id="${s.id}">FIT</button></div>`;
+    return `<div class="sesion"><div><b>${esc(s.nombre)}</b><span>${f.toLocaleDateString("es-ES")} ${f.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })} · ${coma(conEscala(s).muestras.at(-1)[1] / 1000, 2)} km</span></div><button class="mini" data-id="${s.id}">FIT</button></div>`;
   }).join("") : `<p class="suave">Aún no hay sesiones.</p>`;
   for (const b of document.querySelectorAll(".sesion .mini")) b.onclick = () => descargarFIT(leer("cinta.sesiones", []).find(s => s.id == b.dataset.id));
   const pend = leer("cinta.encurso", null);
@@ -246,7 +246,24 @@ function empezar() {
 
 function distSesion() {
   // La distancia la manda la cinta; si no la mandara, se integra la velocidad.
-  return cinta.dato.dist !== undefined ? Math.max(0, cinta.dato.dist - sesion.distBase) : motor.distSim;
+  // Su unidad NO se da por buena: la Reebok FR20z manda decámetros donde FTMS dice metros (09-11: 0,89 km en 50′ a
+  // 10,9 km/h). Se compara con la velocidad integrada a partir de 150 m y, si sale ~10 veces menos, se multiplica.
+  if (cinta.dato.dist === undefined) return motor.distSim;
+  const bruto = Math.max(0, cinta.dato.dist - sesion.distBase);
+  if (!motor.escalaDist) {
+    if (motor.distSim < 150) return motor.distSim;
+    motor.escalaDist = bruto > 0 && bruto / motor.distSim < 0.3 ? 10 : 1;
+  }
+  return bruto * motor.escalaDist;
+}
+
+// Sesiones ya guardadas con la distancia de la cinta sin corregir: se recalcula la escala con su propia velocidad.
+function conEscala(s) {
+  let integrada = 0;
+  for (let k = 1; k < s.muestras.length; k++) integrada += s.muestras[k][2] / 3.6 * (s.muestras[k][0] - s.muestras[k - 1][0]) / 1000;
+  const d = s.muestras.at(-1)[1];
+  if (!(integrada > 150 && d > 0 && d / integrada < 0.3)) return s;
+  return { ...s, muestras: s.muestras.map(([t, dist, vel, fc]) => [t, dist * 10, vel, fc]) };
 }
 
 function avanzar() {
@@ -289,7 +306,7 @@ function tick() {
 
   if (!M.pausado) {
     M.activoPaso += dt;
-    if (cinta.dato.dist === undefined) M.distSim += v / 3.6 * dt / 1000;
+    M.distSim += v / 3.6 * dt / 1000;
     if (t - M.ultimaMuestra >= 1000) {
       M.ultimaMuestra = t;
       sesion.muestras.push([t, Math.round(distSesion() * 10) / 10, v, pulso.valor]);
@@ -391,6 +408,7 @@ function vueltasResumen(s) {
 }
 
 function pintarFinal(s) {
+  s = conEscala(s);
   const d = s.muestras.at(-1)[1], seg = (s.muestras.at(-1)[0] - s.inicio) / 1000;
   const fcs = s.muestras.map(x => x[3]).filter(Boolean);
   $("fResumen").innerHTML = `<div><b>${mmss(seg)}</b><span>tiempo</span></div><div><b>${coma(d / 1000, 2)}</b><span>km</span></div>
@@ -401,6 +419,7 @@ function pintarFinal(s) {
 }
 
 function descargarFIT(s) {
+  s = conEscala(s);
   const fit = crearFIT({
     inicio: s.inicio,
     muestras: s.muestras.map(([t, dist, vel, fc]) => ({ t, dist, vel, fc })),
