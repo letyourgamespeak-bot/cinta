@@ -8,6 +8,29 @@
   ],
   "entrenos": [
     {
+      "id": "rodaje-facil-40",
+      "nombre": "Rodaje fácil 40′",
+      "nota": "Primera sesión real con la app, con el reloj grabando a la vez en modo cinta. 5′ a 10,0 para entrar, 32′ a 10,9 (5:30/km, el ritmo de tu cinta del 28-10) y 3′ a 9,0 de vuelta a la calma. Es por sensaciones: si te va duro o fácil, ajústalo con ±0,1.",
+      "bajada_s": 20,
+      "pasos": [
+        {
+          "tipo": "calentamiento",
+          "min": 5,
+          "kmh": 10.0
+        },
+        {
+          "tipo": "rodaje",
+          "min": 32,
+          "kmh": 10.9
+        },
+        {
+          "tipo": "calma",
+          "min": 3,
+          "kmh": 9.0
+        }
+      ]
+    },
+    {
       "id": "prueba-bloques-suave",
       "nombre": "Prueba: bloques suaves (víspera de carrera)",
       "nota": "Para estrenar la app y la exportación a COROS el sábado, después de la activación. Carga mínima: trote muy suave y andar. Dura más de 25 min a propósito: COROS dice rechazar archivos de menos de 20 KB. Con el reloj grabando a la vez en modo cinta.",
