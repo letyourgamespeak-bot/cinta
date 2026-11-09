@@ -47,17 +47,29 @@ class Escritor {
   }
 }
 
+// Calorías (COROS no las calcula en un archivo importado). Por pulso, Keytel (hombre) escalado a lo que COROS le
+// da a él en cinta con el reloj: 0,71 × Keytel (465 kcal el 09-11 y 433 el 28-10, ±3 %). Sube con la intensidad.
+// Constantes ya plegadas: kcal/min = KCAL_A × FC − KCAL_B. Sin pulso, 52 kcal/km (su media en cinta con el reloj).
+const KCAL_A = 0.10706, KCAL_B = 5.6948, KCAL_KM = 52;
+function kcalPaso(m, seg) {
+  if (m.fc > 0) return Math.max(0, KCAL_A * m.fc - KCAL_B) * seg / 60;
+  return (m.vel || 0) / 3600 * seg * KCAL_KM;
+}
+
 const vms = kmh => Math.round(kmh / 3.6 * 1000); // km/h -> m/s * 1000
 
 function resumen(muestras, desde, hasta) {
   // Una muestra en el instante exacto del cambio cierra la vuelta anterior: cada vuelta toma (desde, hasta].
   const m = muestras.filter(x => x.t > desde && x.t <= hasta);
-  if (!m.length) return { dist: 0, vMed: 0, vMax: 0, fcMed: null, fcMax: null };
+  if (!m.length) return { kcal: 0, dist: 0, vMed: 0, vMax: 0, fcMed: null, fcMax: null };
   const antes = muestras.filter(x => x.t <= desde).pop();
   const dist = m[m.length - 1].dist - (antes ? antes.dist : 0);
   const seg = (hasta - desde) / 1000;
   const fcs = m.map(x => x.fc).filter(x => x > 0);
+  let kcal = 0, prev = antes;
+  for (const x of m) { if (prev) kcal += kcalPaso(x, Math.min(2, (x.t - prev.t) / 1000)); prev = x; } // un hueco de pausa no suma
   return {
+    kcal: Math.round(kcal),
     dist: Math.max(0, dist),
     vMed: seg > 0 ? dist / seg * 3.6 : 0,
     vMax: Math.max(...m.map(x => x.vel || 0)),
@@ -91,19 +103,19 @@ export function crearFIT(sesion) {
 
   w.definir(4, 19, [[253, "uint32"], [0, "enum"], [1, "enum"], [2, "uint32"], [7, "uint32"], [8, "uint32"],
     [9, "uint32"], [13, "uint16"], [14, "uint16"], [15, "uint8"], [16, "uint8"], [24, "enum"], [25, "enum"],
-    [39, "enum"], [254, "uint16"], [110, "uint32"], [111, "uint32"]]);
+    [39, "enum"], [254, "uint16"], [110, "uint32"], [111, "uint32"], [11, "uint16"]]);
   vueltas.forEach((v, i) => {
     const r = resumen(muestras, v.inicio, v.fin), dur = Math.round(v.fin - v.inicio);
     w.dato(4, [ts(v.fin), 9, 1, ts(v.inicio), dur, dur, Math.round(r.dist * 100), vms(r.vMed), vms(r.vMax),
-      r.fcMed, r.fcMax, disparo[v.disparo] ?? 0, 1, 1, i, vms(r.vMed), vms(r.vMax)]);
+      r.fcMed, r.fcMax, disparo[v.disparo] ?? 0, 1, 1, i, vms(r.vMed), vms(r.vMax), r.kcal]);
   });
 
   const r = resumen(muestras, t0, t1), dur = Math.round(t1 - t0);
   w.definir(5, 18, [[253, "uint32"], [0, "enum"], [1, "enum"], [2, "uint32"], [5, "enum"], [6, "enum"],
     [7, "uint32"], [8, "uint32"], [9, "uint32"], [14, "uint16"], [15, "uint16"], [16, "uint8"], [17, "uint8"],
-    [25, "uint16"], [26, "uint16"], [28, "enum"], [254, "uint16"], [124, "uint32"], [125, "uint32"]]);
+    [25, "uint16"], [26, "uint16"], [28, "enum"], [254, "uint16"], [124, "uint32"], [125, "uint32"], [11, "uint16"]]);
   w.dato(5, [ts(t1), 8, 1, ts(t0), 1, 1, dur, dur, Math.round(r.dist * 100), vms(r.vMed), vms(r.vMax),
-    r.fcMed, r.fcMax, 0, vueltas.length, 0, 0, vms(r.vMed), vms(r.vMax)]);
+    r.fcMed, r.fcMax, 0, vueltas.length, 0, 0, vms(r.vMed), vms(r.vMax), r.kcal]);
 
   const local = ts(t1) - new Date(t1).getTimezoneOffset() * 60;
   w.definir(6, 34, [[253, "uint32"], [0, "uint32"], [1, "uint16"], [2, "enum"], [3, "enum"], [4, "enum"], [5, "uint32"]]);
