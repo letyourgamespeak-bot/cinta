@@ -87,8 +87,13 @@ export function crearFIT(sesion) {
   w.definir(0, 0, [[0, "enum"], [1, "uint16"], [2, "uint16"], [3, "uint32z"], [4, "uint32"]]);
   w.dato(0, [4, 255, 1, 1106, ts(t0)]); // actividad, fabricante «development»
 
-  w.definir(1, 12, [[0, "enum"], [1, "enum"], [3, "string", 16]]);
-  w.dato(1, [1, 1, "Cinta"]); // carrera, en cinta
+  // El nombre del entreno va en tres sitios, porque no consta cuál lee COROS para el título (por probar, 09-11):
+  // el deporte (sport.name), un mensaje de entreno (workout.wkt_name) y la sesión (sport_profile_name).
+  const nombre = sesion.nombre || "Cinta";
+  w.definir(1, 12, [[0, "enum"], [1, "enum"], [3, "string", 48]]);
+  w.dato(1, [1, 1, nombre]); // carrera, en cinta
+  w.definir(7, 26, [[4, "enum"], [8, "string", 48]]);
+  w.dato(7, [1, nombre]);
 
   w.definir(2, 21, [[253, "uint32"], [0, "enum"], [1, "enum"]]);
   w.dato(2, [ts(t0), 0, 0]); // temporizador: empieza
@@ -113,9 +118,10 @@ export function crearFIT(sesion) {
   const r = resumen(muestras, t0, t1), dur = Math.round(t1 - t0);
   w.definir(5, 18, [[253, "uint32"], [0, "enum"], [1, "enum"], [2, "uint32"], [5, "enum"], [6, "enum"],
     [7, "uint32"], [8, "uint32"], [9, "uint32"], [14, "uint16"], [15, "uint16"], [16, "uint8"], [17, "uint8"],
-    [25, "uint16"], [26, "uint16"], [28, "enum"], [254, "uint16"], [124, "uint32"], [125, "uint32"], [11, "uint16"]]);
+    [25, "uint16"], [26, "uint16"], [28, "enum"], [254, "uint16"], [124, "uint32"], [125, "uint32"], [11, "uint16"],
+    [110, "string", 48]]);
   w.dato(5, [ts(t1), 8, 1, ts(t0), 1, 1, dur, dur, Math.round(r.dist * 100), vms(r.vMed), vms(r.vMax),
-    r.fcMed, r.fcMax, 0, vueltas.length, 0, 0, vms(r.vMed), vms(r.vMax), r.kcal]);
+    r.fcMed, r.fcMax, 0, vueltas.length, 0, 0, vms(r.vMed), vms(r.vMax), r.kcal, nombre]);
 
   const local = ts(t1) - new Date(t1).getTimezoneOffset() * 60;
   w.definir(6, 34, [[253, "uint32"], [0, "uint32"], [1, "uint16"], [2, "enum"], [3, "enum"], [4, "enum"], [5, "uint32"]]);

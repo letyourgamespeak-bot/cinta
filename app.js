@@ -3,6 +3,7 @@
 // y 0x03 (inclinación) solo si un entreno la pide. Arrancar, pausar y parar se hacen SIEMPRE con los botones
 // de la cinta: la app detecta la pausa al ver la velocidad a 0.
 import { crearFIT } from "./fit.js";
+import { decidir, objetivoPulso } from "./control_pulso.js";
 
 const $ = id => document.getElementById(id);
 const P = new URLSearchParams(location.search);
@@ -135,7 +136,14 @@ class PulsoBLE {
 class PulsoSimulado {
   constructor() { this.conectado = false; this.alCambiar = () => {}; }
   async conectar() { this.conectado = true; this.alCambiar(); }
-  get valor() { const v = cinta.dato.vel || 0; return Math.round(95 + v * 4.5 + Math.sin(ahora() / 9000) * 3); }
+  // Pulso de mentira con inercia (35 s al subir, 50 al bajar), +6 de «sótano» y deriva por encima de 13 km/h.
+  get valor() {
+    const t = ahora(), dt = Math.min(5, (t - (this.t || t)) / 1000); this.t = t;
+    const v = cinta.dato.vel || 0; this.fc = this.fc || 70; this.der = Math.max(0, (this.der || 0) + (v > 13 ? 0.45 : -0.3) * dt / 60);
+    const ss = v > 0 ? 48 + 8 * v + 6 + this.der : 70;
+    this.fc += (ss - this.fc) * Math.min(1, dt / (ss > this.fc ? 35 : 50));
+    return Math.round(this.fc);
+  }
   get nombre() { return "Pulso simulado"; }
 }
 
@@ -154,6 +162,13 @@ function expandir(entreno) {
       nombre: p.nombre || (n > 1 && ["serie", "recuperacion", "cuesta"].includes(p.tipo) ? `${base} ${i}/${n}` : base),
       tipo: p.tipo, kmh, incl: p.incl ?? null, libre: !!p.libre,
       s: p.min ? p.min * 60 : p.s || null, m: p.m || null,
+      heredar: !!p.heredar,
+      pulso: p.pulso ? {
+        fin: Array.isArray(p.pulso.fin) ? p.pulso.fin[Math.min(i, p.pulso.fin.length) - 1] : p.pulso.fin,
+        vmax: p.pulso.rapido ? Math.floor(kmhDeRitmo(p.pulso.rapido) * 10) / 10 : 18,
+        vmin: p.pulso.lento ? Math.ceil(kmhDeRitmo(p.pulso.lento) * 10) / 10 : 1,
+        desde: p.pulso.desde_s ?? 120,
+      } : null,
     });
   };
   const recorrer = (pasos, i, n) => pasos.forEach(p => {
@@ -172,8 +187,9 @@ function duracionEstimada(pasos) {
 
 function describirPaso(p) {
   const dur = p.libre ? "libre" : p.s ? mmss(p.s) : p.m ? (p.m >= 1000 ? coma(p.m / 1000, 2) + " km" : p.m + " m") : "";
-  const int = p.kmh ? `${coma(p.kmh)} km/h · ${ritmoDeKmh(p.kmh)}/km` : "a tu aire";
-  return `${dur} · ${int}${p.incl ? " · " + p.incl + " %" : ""}`;
+  const int = p.kmh ? `${p.heredar ? "desde " : ""}${coma(p.kmh)} km/h · ${ritmoDeKmh(p.kmh)}/km` : "a tu aire";
+  const fc = p.pulso ? ` · por pulso: acaba en ${p.pulso.fin} (entre ${ritmoDeKmh(p.pulso.vmax)} y ${ritmoDeKmh(p.pulso.vmin)})` : "";
+  return `${dur} · ${int}${p.incl ? " · " + p.incl + " %" : ""}${fc}`;
 }
 
 let entrenos = [];
@@ -238,7 +254,9 @@ function empezar() {
   const t = ahora();
   sesion = { id: t, nombre: elegido.nombre, inicio: t, muestras: [], vueltas: [], distBase: cinta.dato.dist ?? 0 };
   motor = { pasos, i: -1, bajada: (elegido.bajada_s ?? 20) * 1000, pausado: false, ceroDesde: null, activoPaso: 0, ultimo: t,
-            pitado: 99, ultimaMuestra: 0, ultimoEnvio: 0, enviado: null, rampa: null, reaplicar: 0, terminado: false, distSim: 0 };
+            pitado: 99, ultimaMuestra: 0, ultimoEnvio: 0, enviado: null, rampa: null, reaplicar: 0, terminado: false, distSim: 0,
+            fcEstado: { ultimo: null }, velHeredada: null, ultAlarma: -1e9, motivo: "" };
+  sesion.ajustes = [];
   avanzar();
   mostrar("entreno");
   motor.reloj = setInterval(tick, 200 / ACEL);
@@ -270,17 +288,21 @@ function avanzar() {
   const t = ahora(), M = motor;
   if (M.i >= 0) {
     const p = M.pasos[M.i];
+    if (p.pulso) M.velHeredada = objetivo();
     sesion.vueltas.push({ inicio: M.inicioPaso, fin: t, nombre: p.nombre, disparo: p.libre ? "manual" : p.m ? "distancia" : "tiempo" });
   }
   M.i++;
   if (M.i >= M.pasos.length) return completar();
   const p = M.pasos[M.i], ant = M.pasos[M.i - 1];
   M.inicioPaso = t; M.activoPaso = 0; M.distInicioPaso = distSesion(); M.pitado = 99; M.ajuste = 0;
-  M.rampa = null;
+  M.rampa = null; M.fcEstado = { ultimo: null }; M.motivo = "";
+  // Un bloque con «heredar» empieza a la velocidad a la que acabó el anterior controlado por pulso.
+  if (p.heredar && p.kmh && M.velHeredada) M.ajuste = r1(M.velHeredada - p.kmh);
   if (p.kmh) {
-    const desde = cinta.dato.vel || (ant && ant.kmh) || p.kmh;
-    if (desde > p.kmh + 0.15 && M.bajada > 0) M.rampa = { desde, hasta: p.kmh, t0: t };
-    else mandar(p.kmh);
+    const meta = limitar(p.kmh + M.ajuste);
+    const desde = cinta.dato.vel || (ant && ant.kmh) || meta;
+    if (desde > meta + 0.15 && M.bajada > 0) M.rampa = { desde, hasta: p.kmh, t0: t };
+    else mandar(meta);
   }
   if (p.incl !== null) cinta.inclinacion(p.incl);
   else if (ant && ant.incl) cinta.inclinacion(0);
@@ -290,7 +312,9 @@ function avanzar() {
 
 function objetivo() {
   const p = motor.pasos[motor.i];
-  return p && p.kmh ? limitar(p.kmh + motor.ajuste) : null;
+  if (!p || !p.kmh) return null;
+  const v = limitar(p.kmh + motor.ajuste);
+  return p.pulso ? Math.min(p.pulso.vmax, Math.max(p.pulso.vmin, v)) : v;
 }
 
 function mandar(kmh) { motor.enviado = limitar(kmh); motor.ultimoEnvio = ahora(); cinta.velocidad(motor.enviado); }
@@ -324,6 +348,22 @@ function tick() {
   }
   if (M.reaplicar && t >= M.reaplicar) { M.reaplicar = 0; if (objetivo()) mandar(objetivo()); }
 
+  // Control por pulso: la velocidad la lleva el pulso (control_pulso.js).
+  if (p.pulso && p.kmh && !M.rampa && !M.pausado) {
+    const ult = sesion.muestras.slice(-10).map(x => x[3]).filter(x => x > 0);
+    const fcMed = ult.length >= 5 ? Math.round(ult.reduce((a, b) => a + b) / ult.length) : null;
+    const r = decidir({ t: t / 1000, tPaso: M.activoPaso / 1000, durPaso: p.s || 600, fc: fcMed, vel: objetivo(),
+                        fin: p.pulso.fin, vmax: p.pulso.vmax, vmin: p.pulso.vmin, desde: p.pulso.desde }, M.fcEstado);
+    if (r.delta) {
+      M.ajuste = r1(M.ajuste + r.delta); mandar(objetivo()); M.fcEstado.ultimo = t / 1000; M.motivo = r.motivo;
+      sesion.ajustes.push([t, objetivo(), fcMed]);
+    }
+    if (r.alarma && t - M.ultAlarma > 30000) {
+      M.ultAlarma = t; pitido(300, 520); setTimeout(() => pitido(300, 520), 450); vibrar([300, 150, 300]);
+      aviso("Pulso alto incluso al ritmo más lento previsto: si lo ves, baja tú o para", true);
+    }
+  }
+
   // ¿Se acabó el paso?
   let falta = null;
   if (p.s) falta = p.s - M.activoPaso / 1000;
@@ -350,6 +390,7 @@ function pintarEntreno() {
     else $("eQueda").textContent = Math.max(0, Math.round(p.m - (distSesion() - M.distInicioPaso))) + " m";
     const o = objetivo();
     $("eObj").textContent = M.pausado ? "EN PAUSA · arranca la cinta para seguir"
+      : o && p.pulso ? `${coma(o)} km/h · ${ritmoDeKmh(o)}/km · por pulso → ${Math.round(objetivoPulso(p.pulso.fin, M.activoPaso / 1000, p.s || 600, p.pulso.desde))}${M.rampa ? " · bajando…" : ""}`
       : o ? `Objetivo ${coma(o)} km/h · ${ritmoDeKmh(o)}/km${M.rampa ? " · bajando…" : ""}${M.ajuste ? ` (ajuste ${M.ajuste > 0 ? "+" : ""}${coma(M.ajuste)})` : ""}`
       : p.libre ? "Libre · pulsa «Siguiente» cuando acabes" : "A tu aire";
     const sig = M.pasos[M.i + 1];
@@ -367,6 +408,8 @@ function pintarEntreno() {
 
 function completar() {
   motor.terminado = true; motor.tFin = ahora(); pitido(800, 990); vibrar([400, 150, 400]);
+  // Al acabar, la cinta baja sola a paso de andar: él no tiene que mirar el móvil. Pararla, con su botón.
+  if (cinta.conectada && (cinta.dato.vel || 0) > 6) mandar(6.0);
   guardar("cinta.encurso", sesion);
 }
 
@@ -376,7 +419,7 @@ function cerrarSesion() {
     const p = motor.pasos[motor.i];
     sesion.vueltas.push({ inicio: motor.inicioPaso, fin: ahora(), nombre: p.nombre, disparo: "manual" });
   }
-  const s = { id: sesion.id, nombre: sesion.nombre, inicio: sesion.inicio, muestras: sesion.muestras, vueltas: sesion.vueltas };
+  const s = { id: sesion.id, nombre: sesion.nombre, inicio: sesion.inicio, muestras: sesion.muestras, vueltas: sesion.vueltas, ajustes: sesion.ajustes || [] };
   if (s.muestras.length < 2) { aviso("Sesión demasiado corta: no se guarda", true); localStorage.removeItem("cinta.encurso"); sesion = null; return pintarInicio(); }
   const todas = leer("cinta.sesiones", []); todas.push(s);
   if (guardar("cinta.sesiones", todas.slice(-15))) localStorage.removeItem("cinta.encurso");
@@ -421,7 +464,7 @@ function pintarFinal(s) {
 function descargarFIT(s) {
   s = conEscala(s);
   const fit = crearFIT({
-    inicio: s.inicio,
+    inicio: s.inicio, nombre: s.nombre,
     muestras: s.muestras.map(([t, dist, vel, fc]) => ({ t, dist, vel, fc })),
     vueltas: s.vueltas,
   });
@@ -446,8 +489,10 @@ $("bPulso").onclick = async () => {
 $("bEmpezar").onclick = empezar;
 $("bVolver").onclick = pintarInicio;
 $("bSig").onclick = () => { if (motor && !motor.terminado) avanzar(); };
-$("bMenos").onclick = () => { if (objetivo()) { motor.ajuste = r1(motor.ajuste - 0.1); if (!motor.rampa) mandar(objetivo()); } };
-$("bMas").onclick = () => { if (objetivo()) { motor.ajuste = r1(motor.ajuste + 0.1); if (!motor.rampa) mandar(objetivo()); } };
+// Si toca él, el control por pulso espera 40 s antes de volver a corregir.
+const aMano = d => { if (!objetivo()) return; motor.ajuste = r1(motor.ajuste + d); motor.fcEstado.ultimo = ahora() / 1000; if (!motor.rampa) mandar(objetivo()); };
+$("bMenos").onclick = () => aMano(-0.1);
+$("bMas").onclick = () => aMano(0.1);
 $("bTerminar").onclick = () => {
   const b = $("bTerminar");
   if (motor.terminado || b.dataset.armado) { delete b.dataset.armado; return cerrarSesion(); }

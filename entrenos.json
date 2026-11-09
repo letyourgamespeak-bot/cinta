@@ -4,9 +4,59 @@
     "o 'libre': true (lo terminas tú con «Siguiente»). Y UNA intensidad: 'ritmo' ('4:30' por km) o 'kmh' (velocidad).",
     "Un paso libre puede no llevar intensidad: la cinta no se toca y la llevas tú con sus botones.",
     "'repetir': N con 'pasos' repite el bloque. 'incl' (%) es opcional. 'bajada_s': segundos de la bajada progresiva",
-    "cuando un paso es más lento que el anterior (por defecto 20). La cinta va de 1,0 a 18,0 km/h de 0,1 en 0,1."
+    "cuando un paso es más lento que el anterior (por defecto 20). La cinta va de 1,0 a 18,0 km/h de 0,1 en 0,1.",
+    "'pulso' en un paso largo: la velocidad la lleva el pulso (control_pulso.js). 'fin' = pulso al acabar el bloque (número, o lista por repetición); 'rapido'/'lento' = ritmos límite; 'desde_s' = segundos sin tocar al empezar (120). 'heredar': true = el bloque empieza a la velocidad con la que acabó el anterior controlado por pulso."
   ],
   "entrenos": [
+    {
+      "id": "ritmo10k-3x8-pulso",
+      "nombre": "Ritmo 10K · 3×8′ por pulso",
+      "nota": "Clave del Plan (3×8′ a ritmo de 10K, máx. 177 ppm), adaptada a la cinta: la velocidad la lleva tu pulso. Calentamiento de 12′ solo (8′ a 10,5 y 4′ a 11,5). Cada serie arranca a 3:55 (la 1.ª) o a la velocidad con la que acabó la anterior; los 2 primeros minutos no se toca, y después la app sube o baja de 0,1 en 0,1 para que acabes la 1.ª a 172, la 2.ª a 174 y la 3.ª a 176. Nunca más rápido que 3:53 ni más lento que 4:25. 2′ de trote a 9,0 entre series y 8′ de vuelta a la calma; al acabar, la cinta baja sola a paso de andar. No tienes que mirar el móvil: si tocas ±0,1, la app espera 40″ antes de volver a corregir.",
+      "bajada_s": 20,
+      "pasos": [
+        {
+          "tipo": "calentamiento",
+          "min": 8,
+          "kmh": 10.5
+        },
+        {
+          "tipo": "calentamiento",
+          "nombre": "Calentamiento (último tramo)",
+          "min": 4,
+          "kmh": 11.5
+        },
+        {
+          "repetir": 3,
+          "pasos": [
+            {
+              "tipo": "serie",
+              "min": 8,
+              "ritmo": "3:55",
+              "heredar": true,
+              "pulso": {
+                "fin": [
+                  172,
+                  174,
+                  176
+                ],
+                "rapido": "3:53",
+                "lento": "4:25"
+              }
+            },
+            {
+              "tipo": "recuperacion",
+              "min": 2,
+              "kmh": 9.0
+            }
+          ]
+        },
+        {
+          "tipo": "calma",
+          "min": 8,
+          "kmh": 9.0
+        }
+      ]
+    },
     {
       "id": "rodaje-facil-40",
       "nombre": "Rodaje fácil ~40′ (largo libre)",
