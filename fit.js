@@ -47,13 +47,17 @@ class Escritor {
   }
 }
 
-// Calorías (COROS no las calcula en un archivo importado). Por pulso, Keytel (hombre) escalado a lo que COROS le
-// da a él en cinta con el reloj: 0,71 × Keytel (465 kcal el 09-11 y 433 el 28-10, ±3 %). Sube con la intensidad.
-// Constantes ya plegadas: kcal/min = KCAL_A × FC − KCAL_B. Sin pulso, 52 kcal/km (su media en cinta con el reloj).
-const KCAL_A = 0.10706, KCAL_B = 5.6948, KCAL_KM = 52;
+// Calorías (COROS no las calcula en un archivo importado: usa las del archivo, comprobado el 10-11).
+// Por RITMO, no por pulso: en el sótano el pulso sale inflado por el calor y engordaría la cifra. Ajustado el 10-11 a lo
+// que COROS le da en la CALLE (32 carreras del 01-10 al 08-11): ~66 kcal/km a 5:00 o más lento, y 0,2 kcal/km más por
+// cada segundo por debajo de 5:00 (a 3:59, ~78). Error típico ±4,5 kcal/km. Hasta el 10-11 iba por pulso calibrado
+// a la cinta del reloj (0,71 × Keytel) y daba ~30 % menos que la calle: 515 kcal en el 3×8′ (él: «me parecen pocas»).
+const KCAL_KM = 66, KCAL_POR_S = 0.2;
 function kcalPaso(m, seg) {
-  if (m.fc > 0) return Math.max(0, KCAL_A * m.fc - KCAL_B) * seg / 60;
-  return (m.vel || 0) / 3600 * seg * KCAL_KM;
+  const v = m.vel || 0;
+  if (v < 1) return 0;
+  const ritmo = 3600 / v;
+  return v / 3600 * seg * (KCAL_KM + KCAL_POR_S * Math.max(0, 300 - ritmo));
 }
 
 const vms = kmh => Math.round(kmh / 3.6 * 1000); // km/h -> m/s * 1000
