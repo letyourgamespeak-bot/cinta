@@ -11,7 +11,7 @@
     {
       "id": "ritmo15k-2x12-pulso",
       "nombre": "Ritmo 15K · 2×12′ por pulso",
-      "nota": "Clave del Plan (2×12′ a 4:02, máx. 173 ppm), en cinta y por pulso. 12′ de calentamiento solo. La 1.ª arranca a 4:05 y la 2.ª a la velocidad con que acabó la 1.ª; 2′ sin tocar y después la app ajusta para acabar la 1.ª a 170 y la 2.ª a 172, justo por debajo del techo. Nunca más rápido que 4:02 ni más lento que 4:30. 3′ de trote a 9,0 entre bloques y 8′ de calma; al acabar, la cinta baja sola a paso de andar.",
+      "nota": "Clave del Plan (2×12′ a 4:02, máx. 173 ppm), en cinta y por pulso. 12′ de calentamiento solo. La 1.ª arranca a 4:05 y la 2.ª a la velocidad con que acabó la 1.ª; 2′ sin tocar y después la app ajusta para acabar la 1.ª a 170 y la 2.ª a 172, justo por debajo del techo. Manda el pulso (desde el 12-11): el ritmo es libre y solo tiene un raíl, nunca más rápido que 3:53 (el ritmo del sistema de encima) ni más lento que 4:30. 3′ de trote a 9,0 entre bloques y 8′ de calma; al acabar, la cinta baja sola a paso de andar.",
       "bajada_s": 20,
       "pasos": [
         {
@@ -38,7 +38,7 @@
                   170,
                   172
                 ],
-                "rapido": "4:02",
+                "rapido": "3:53",
                 "lento": "4:30"
               }
             },
@@ -59,7 +59,7 @@
     {
       "id": "umbral-40-pulso",
       "nombre": "Umbral · 40′ seguidos por pulso",
-      "nota": "Clave del Plan (40′ continuos a 4:10, máx. 171 ppm), en cinta y por pulso. 10′ de calentamiento solo. Arranca a 4:13; 2′ sin tocar y después la app ajusta para acabar a 169, por debajo del techo. Nunca más rápido que 4:10 ni más lento que 4:35. 8′ de calma; al acabar, la cinta baja sola a paso de andar.",
+      "nota": "Clave del Plan (40′ continuos a 4:10, máx. 171 ppm), en cinta y por pulso. 10′ de calentamiento solo. Arranca a 4:13; 2′ sin tocar y después la app ajusta para acabar a 169, por debajo del techo. Manda el pulso (desde el 12-11): el ritmo es libre y solo tiene un raíl, nunca más rápido que 4:02 (el ritmo del sistema de encima) ni más lento que 4:35. 8′ de calma; al acabar, la cinta baja sola a paso de andar.",
       "bajada_s": 20,
       "pasos": [
         {
@@ -80,7 +80,7 @@
           "ritmo": "4:13",
           "pulso": {
             "fin": 169,
-            "rapido": "4:10",
+            "rapido": "4:02",
             "lento": "4:35"
           }
         },
@@ -94,7 +94,7 @@
     {
       "id": "ritmo10k-3x8-pulso",
       "nombre": "Ritmo 10K · 3×8′ por pulso",
-      "nota": "Clave del Plan (3×8′ a ritmo de 10K, máx. 177 ppm), adaptada a la cinta: la velocidad la lleva tu pulso. Calentamiento de 12′ solo (8′ a 10,5 y 4′ a 11,5). Cada serie arranca a 3:55 (la 1.ª) o a la velocidad con la que acabó la anterior; los 2 primeros minutos no se toca, y después la app sube o baja de 0,1 en 0,1 para que acabes la 1.ª a 172, la 2.ª a 174 y la 3.ª a 176. Nunca más rápido que 3:53 ni más lento que 4:25. 2′ de trote a 9,0 entre series y 8′ de vuelta a la calma; al acabar, la cinta baja sola a paso de andar. No tienes que mirar el móvil: si tocas ±0,1, la app espera 40″ antes de volver a corregir.",
+      "nota": "Clave del Plan (3×8′ a ritmo de 10K, máx. 177 ppm), adaptada a la cinta: la velocidad la lleva tu pulso. Calentamiento de 12′ solo (8′ a 10,5 y 4′ a 11,5). Cada serie arranca a 3:55 (la 1.ª) o a la velocidad con la que acabó la anterior; los 2 primeros minutos no se toca, y después la app sube o baja de 0,1 en 0,1 para que acabes la 1.ª a 172, la 2.ª a 174 y la 3.ª a 176. Manda el pulso (desde el 12-11): el ritmo es libre y solo tiene un raíl, nunca más rápido que 3:35 (el ritmo del sistema de encima) ni más lento que 4:25. 2′ de trote a 9,0 entre series y 8′ de vuelta a la calma; al acabar, la cinta baja sola a paso de andar. No tienes que mirar el móvil: si tocas ±0,1, la app espera 40″ antes de volver a corregir.",
       "bajada_s": 20,
       "pasos": [
         {
@@ -122,7 +122,7 @@
                   174,
                   176
                 ],
-                "rapido": "3:53",
+                "rapido": "3:35",
                 "lento": "4:25"
               }
             },

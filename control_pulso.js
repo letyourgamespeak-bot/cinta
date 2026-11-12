@@ -9,7 +9,8 @@
 //   - Cada 40 s como mínimo: >5 por encima → −0,2 km/h; >1,5 por encima → −0,1; >4 por debajo → +0,1.
 //   - Freno de emergencia en cualquier momento desde el minuto 1: fin+3 o más → −0,2 (cada 20 s como mucho).
 //   - En el último minuto solo baja: subir ya no le da tiempo al pulso a responder.
-//   - Nunca más rápido que vmax (el ritmo del Plan) ni más lento que vmin; si en vmin sigue alto, alarma.
+//   - Nunca más rápido que vmax ni más lento que vmin; si en vmin sigue alto, alarma. Desde el 12-11 vmax ya no es el
+//     ritmo del Plan sino el del sistema de encima (él: «prefiero que salga el estímulo»): en cinta manda el pulso.
 //   - Sin pulso: la velocidad se queda quieta.
 
 export const ESPERA_S = 40, ESPERA_EMERGENCIA_S = 20, MARGEN_ARRANQUE = 5;
