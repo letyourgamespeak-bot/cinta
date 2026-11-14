@@ -9,6 +9,45 @@
   ],
   "entrenos": [
     {
+      "id": "vo2-12x1-ritmo",
+      "nombre": "Series cortas · 12×1′",
+      "nota": "Clave del Plan (12×1′ fuerte con 1′ de trote; en la calle a 3:33), adaptada a la cinta. En series de 1′ el pulso no llega a asentarse, así que aquí manda el RITMO y tu esfuerzo, no el pulso. Calentamiento de 12′ solo (8′ a 10,5 y 4′ a 11,5). Las series arrancan a 16,5 km/h (3:38), un pelín más suaves que en la calle porque en tu cinta te cuesta más: si las 3-4 primeras te salen fáciles, sube +0,1; si en la 8.ª vas al límite, baja. Tienen que costar al final, un 8 sobre 10, sin descomponerte: la 12.ª como la 1.ª. Entre series, 1′ de trote a 9,0 (la bajada dura 10″, no 20, para no comerte la recuperación). La cinta tarda unos 7″ en subir de 9 a 16,5: cuenta con ello. 8′ de vuelta a la calma; al acabar baja sola a paso de andar. Al terminar, pásame tu esfuerzo (de 1 a 10).",
+      "bajada_s": 10,
+      "pasos": [
+        {
+          "tipo": "calentamiento",
+          "min": 8,
+          "kmh": 10.5
+        },
+        {
+          "tipo": "calentamiento",
+          "nombre": "Calentamiento (último tramo)",
+          "min": 4,
+          "kmh": 11.5
+        },
+        {
+          "repetir": 12,
+          "pasos": [
+            {
+              "tipo": "serie",
+              "min": 1,
+              "kmh": 16.5
+            },
+            {
+              "tipo": "recuperacion",
+              "min": 1,
+              "kmh": 9.0
+            }
+          ]
+        },
+        {
+          "tipo": "calma",
+          "min": 8,
+          "kmh": 9.0
+        }
+      ]
+    },
+    {
       "id": "ritmo15k-2x12-pulso",
       "nombre": "Ritmo 15K · 2×12′ por pulso",
       "nota": "Clave del Plan (2×12′ a 4:02, máx. 173 ppm), en cinta y por pulso. 12′ de calentamiento solo. La 1.ª arranca a 4:05 y la 2.ª a la velocidad con que acabó la 1.ª; 2′ sin tocar y después la app ajusta para acabar la 1.ª a 170 y la 2.ª a 172, justo por debajo del techo. Manda el pulso (desde el 12-11): el ritmo es libre y solo tiene un raíl, nunca más rápido que 3:53 (el ritmo del sistema de encima) ni más lento que 4:30. 3′ de trote a 9,0 entre bloques y 8′ de calma; al acabar, la cinta baja sola a paso de andar.",
