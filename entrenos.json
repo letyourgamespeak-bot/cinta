@@ -9,48 +9,9 @@
   ],
   "entrenos": [
     {
-      "id": "vo2-12x1-ritmo",
-      "nombre": "Series cortas · 12×1′",
-      "nota": "Clave del Plan (12×1′ fuerte con 1′ de trote; en la calle a 3:33), adaptada a la cinta. En series de 1′ el pulso no llega a asentarse, así que aquí manda el RITMO y tu esfuerzo, no el pulso. Calentamiento de 12′ solo (8′ a 10,5 y 4′ a 11,5). Las series arrancan a 16,5 km/h (3:38), un pelín más suaves que en la calle porque en tu cinta te cuesta más: si las 3-4 primeras te salen fáciles, sube +0,1; si en la 8.ª vas al límite, baja. Tienen que costar al final, un 8 sobre 10, sin descomponerte: la 12.ª como la 1.ª. Entre series, 1′ de trote a 9,0 (la bajada dura 10″, no 20, para no comerte la recuperación). La cinta tarda unos 7″ en subir de 9 a 16,5: cuenta con ello. 8′ de vuelta a la calma; al acabar baja sola a paso de andar. Al terminar, pásame tu esfuerzo (de 1 a 10).",
-      "bajada_s": 10,
-      "pasos": [
-        {
-          "tipo": "calentamiento",
-          "min": 8,
-          "kmh": 10.5
-        },
-        {
-          "tipo": "calentamiento",
-          "nombre": "Calentamiento (último tramo)",
-          "min": 4,
-          "kmh": 11.5
-        },
-        {
-          "repetir": 12,
-          "pasos": [
-            {
-              "tipo": "serie",
-              "min": 1,
-              "kmh": 16.5
-            },
-            {
-              "tipo": "recuperacion",
-              "min": 1,
-              "kmh": 9.0
-            }
-          ]
-        },
-        {
-          "tipo": "calma",
-          "min": 8,
-          "kmh": 9.0
-        }
-      ]
-    },
-    {
-      "id": "ritmo15k-2x12-pulso",
-      "nombre": "Ritmo 15K · 2×12′ por pulso",
-      "nota": "Clave del Plan (2×12′ a 4:02, máx. 173 ppm), en cinta y por pulso. 12′ de calentamiento solo. La 1.ª arranca a 4:05 y la 2.ª a la velocidad con que acabó la 1.ª; 2′ sin tocar y después la app ajusta para acabar la 1.ª a 170 y la 2.ª a 172, justo por debajo del techo. Manda el pulso (desde el 12-11): el ritmo es libre y solo tiene un raíl, nunca más rápido que 3:53 (el ritmo del sistema de encima) ni más lento que 4:30. 3′ de trote a 9,0 entre bloques y 8′ de calma; al acabar, la cinta baja sola a paso de andar.",
+      "id": "ritmo15k-2x15-pulso",
+      "nombre": "Ritmo 15K · 2×15′ por pulso",
+      "nota": "Clave del Plan (2×15′ a ritmo de 15K, máx. 173 ppm), en cinta y por pulso. 12′ de calentamiento solo (8′ a 10,5 y 4′ a 11,5). La 1.ª arranca a 4:00 (15,0 km/h) y la 2.ª a la velocidad con que acabó la 1.ª; 2′ sin tocar y después la app ajusta para acabar la 1.ª a 168 y la 2.ª a 171: dentro de tu zona de ritmo de 15K (164-172) y por debajo del techo. Manda el pulso: el ritmo es libre y solo tiene un raíl, nunca más rápido que 3:51 (el ritmo de 10K, el sistema de encima) ni más lento que 4:30. 3′ de trote a 9,0 entre bloques y 8′ de calma; al acabar, la cinta baja sola a paso de andar. La inclinación, la que marques tú (0 %).",
       "bajada_s": 20,
       "pasos": [
         {
@@ -69,15 +30,15 @@
           "pasos": [
             {
               "tipo": "serie",
-              "min": 12,
-              "ritmo": "4:05",
+              "min": 15,
+              "ritmo": "4:00",
               "heredar": true,
               "pulso": {
                 "fin": [
-                  170,
-                  172
+                  168,
+                  171
                 ],
-                "rapido": "3:53",
+                "rapido": "3:51",
                 "lento": "4:30"
               }
             },
@@ -91,177 +52,6 @@
         {
           "tipo": "calma",
           "min": 8,
-          "kmh": 9.0
-        }
-      ]
-    },
-    {
-      "id": "umbral-40-pulso",
-      "nombre": "Umbral · 40′ seguidos por pulso",
-      "nota": "Clave del Plan (40′ continuos a 4:10, máx. 171 ppm), en cinta y por pulso. 10′ de calentamiento solo. Arranca a 4:13; 2′ sin tocar y después la app ajusta para acabar a 169, por debajo del techo. Manda el pulso (desde el 12-11): el ritmo es libre y solo tiene un raíl, nunca más rápido que 4:02 (el ritmo del sistema de encima) ni más lento que 4:35. 8′ de calma; al acabar, la cinta baja sola a paso de andar.",
-      "bajada_s": 20,
-      "pasos": [
-        {
-          "tipo": "calentamiento",
-          "min": 6,
-          "kmh": 10.5
-        },
-        {
-          "tipo": "calentamiento",
-          "nombre": "Calentamiento (último tramo)",
-          "min": 4,
-          "kmh": 11.5
-        },
-        {
-          "tipo": "serie",
-          "nombre": "Umbral 40′",
-          "min": 40,
-          "ritmo": "4:13",
-          "pulso": {
-            "fin": 169,
-            "rapido": "4:02",
-            "lento": "4:35"
-          }
-        },
-        {
-          "tipo": "calma",
-          "min": 8,
-          "kmh": 9.0
-        }
-      ]
-    },
-    {
-      "id": "ritmo10k-3x8-pulso",
-      "nombre": "Ritmo 10K · 3×8′ por pulso",
-      "nota": "Clave del Plan (3×8′ a ritmo de 10K, máx. 177 ppm), adaptada a la cinta: la velocidad la lleva tu pulso. Calentamiento de 12′ solo (8′ a 10,5 y 4′ a 11,5). Cada serie arranca a 3:55 (la 1.ª) o a la velocidad con la que acabó la anterior; los 2 primeros minutos no se toca, y después la app sube o baja de 0,1 en 0,1 para que acabes la 1.ª a 172, la 2.ª a 174 y la 3.ª a 176. Manda el pulso (desde el 12-11): el ritmo es libre y solo tiene un raíl, nunca más rápido que 3:35 (el ritmo del sistema de encima) ni más lento que 4:25. 2′ de trote a 9,0 entre series y 8′ de vuelta a la calma; al acabar, la cinta baja sola a paso de andar. No tienes que mirar el móvil: si tocas ±0,1, la app espera 40″ antes de volver a corregir.",
-      "bajada_s": 20,
-      "pasos": [
-        {
-          "tipo": "calentamiento",
-          "min": 8,
-          "kmh": 10.5
-        },
-        {
-          "tipo": "calentamiento",
-          "nombre": "Calentamiento (último tramo)",
-          "min": 4,
-          "kmh": 11.5
-        },
-        {
-          "repetir": 3,
-          "pasos": [
-            {
-              "tipo": "serie",
-              "min": 8,
-              "ritmo": "3:55",
-              "heredar": true,
-              "pulso": {
-                "fin": [
-                  172,
-                  174,
-                  176
-                ],
-                "rapido": "3:35",
-                "lento": "4:25"
-              }
-            },
-            {
-              "tipo": "recuperacion",
-              "min": 2,
-              "kmh": 9.0
-            }
-          ]
-        },
-        {
-          "tipo": "calma",
-          "min": 8,
-          "kmh": 9.0
-        }
-      ]
-    },
-    {
-      "id": "rodaje-facil-40",
-      "nombre": "Rodaje fácil ~40′ (largo libre)",
-      "nota": "Primera sesión real con la app, con el reloj grabando a la vez en modo cinta. 5′ a 10,0 para entrar; el rodaje a 10,9 (5:30/km) es LIBRE: dura lo que quieras (unos 32′ para 40′ en total) y pasas a la vuelta a la calma con «Siguiente». Luego 3′ a 9,0. Es por sensaciones: si te va duro o fácil, ajústalo con ±0,1.",
-      "bajada_s": 20,
-      "pasos": [
-        {
-          "tipo": "calentamiento",
-          "min": 5,
-          "kmh": 10.0
-        },
-        {
-          "tipo": "rodaje",
-          "kmh": 10.9,
-          "libre": true
-        },
-        {
-          "tipo": "calma",
-          "min": 3,
-          "kmh": 9.0
-        }
-      ]
-    },
-    {
-      "id": "prueba-bloques-suave",
-      "nombre": "Prueba: bloques suaves (víspera de carrera)",
-      "nota": "Para estrenar la app y la exportación a COROS el sábado, después de la activación. Carga mínima: trote muy suave y andar. Dura más de 25 min a propósito: COROS dice rechazar archivos de menos de 20 KB. Con el reloj grabando a la vez en modo cinta.",
-      "bajada_s": 20,
-      "pasos": [
-        {
-          "tipo": "calentamiento",
-          "libre": true
-        },
-        {
-          "repetir": 4,
-          "pasos": [
-            {
-              "tipo": "serie",
-              "min": 3,
-              "kmh": 9.5
-            },
-            {
-              "tipo": "recuperacion",
-              "min": 2,
-              "kmh": 6.0
-            }
-          ]
-        },
-        {
-          "tipo": "calma",
-          "min": 3,
-          "kmh": 6.0
-        }
-      ]
-    },
-    {
-      "id": "prueba-sistema",
-      "nombre": "Prueba del sistema",
-      "nota": "Para estrenar la app con el reloj grabando a la vez. Calentamiento a tu aire, tres cambios cortos y vuelta a la calma.",
-      "bajada_s": 20,
-      "pasos": [
-        {
-          "tipo": "calentamiento",
-          "libre": true
-        },
-        {
-          "repetir": 3,
-          "pasos": [
-            {
-              "tipo": "serie",
-              "min": 1,
-              "kmh": 12.0
-            },
-            {
-              "tipo": "recuperacion",
-              "min": 1,
-              "kmh": 9.0
-            }
-          ]
-        },
-        {
-          "tipo": "calma",
-          "min": 3,
           "kmh": 9.0
         }
       ]
