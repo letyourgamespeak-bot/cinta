@@ -9,50 +9,30 @@
   ],
   "entrenos": [
     {
-      "id": "ritmo15k-2x15-pulso",
-      "nombre": "Ritmo 15K · 2×15′ por pulso",
-      "nota": "Clave del Plan (2×15′ a ritmo de 15K, máx. 173 ppm), en cinta y por pulso. 12′ de calentamiento solo (8′ a 10,5 y 4′ a 11,5). La 1.ª arranca a 4:00 (15,0 km/h) y la 2.ª a la velocidad con que acabó la 1.ª; 2′ sin tocar y después la app ajusta para acabar la 1.ª a 168 y la 2.ª a 171: dentro de tu zona de ritmo de 15K (164-172) y por debajo del techo. Manda el pulso: el ritmo es libre y solo tiene un raíl, nunca más rápido que 3:51 (el ritmo de 10K, el sistema de encima) ni más lento que 4:30. 3′ de trote a 9,0 entre bloques y 8′ de calma; al acabar, la cinta baja sola a paso de andar. La inclinación, la que marques tú (0 %).",
+      "id": "rodaje-facil-pulso-60",
+      "nombre": "Rodaje fácil · 60′ por pulso",
+      "nota": "Rodaje fácil entre la clave del miércoles y la vara del sábado. 5′ suaves a 10,0 y 50′ por pulso: arranca a 5:30 (10,9 km/h), 2′ sin tocar y después la app ajusta para que el pulso suba poco a poco de 133 a 138 al final, tu zona de fácil aunque el sótano apriete. El ritmo es libre entre 5:00 y 6:30: si el calor te sube el pulso, la cinta baja y no pasa nada. 5′ de calma a 9,5; al acabar, la cinta baja sola a paso de andar. Inclinación, la que marques tú (0 %).",
       "bajada_s": 20,
       "pasos": [
         {
           "tipo": "calentamiento",
-          "min": 8,
-          "kmh": 10.5
+          "min": 5,
+          "kmh": 10.0
         },
         {
-          "tipo": "calentamiento",
-          "nombre": "Calentamiento (último tramo)",
-          "min": 4,
-          "kmh": 11.5
-        },
-        {
-          "repetir": 2,
-          "pasos": [
-            {
-              "tipo": "serie",
-              "min": 15,
-              "ritmo": "4:00",
-              "heredar": true,
-              "pulso": {
-                "fin": [
-                  168,
-                  171
-                ],
-                "rapido": "3:51",
-                "lento": "4:30"
-              }
-            },
-            {
-              "tipo": "recuperacion",
-              "min": 3,
-              "kmh": 9.0
-            }
-          ]
+          "tipo": "rodaje",
+          "min": 50,
+          "ritmo": "5:30",
+          "pulso": {
+            "fin": 138,
+            "rapido": "5:00",
+            "lento": "6:30"
+          }
         },
         {
           "tipo": "calma",
-          "min": 8,
-          "kmh": 9.0
+          "min": 5,
+          "kmh": 9.5
         }
       ]
     }
