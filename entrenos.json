@@ -105,37 +105,9 @@
       ]
     },
     {
-      "id": "rodaje-facil-pulso-40",
-      "nombre": "Rodaje fácil · 40′ por pulso",
-      "nota": "Versión corta del rodaje fácil entre la clave del miércoles y la vara del sábado. 5′ suaves a 10,0 y 30′ por pulso: arranca a 5:30 (10,9 km/h), 2′ sin tocar y después la app ajusta para que el pulso suba poco a poco de 133 a 138 al final, tu zona de fácil aunque el sótano apriete. El ritmo es libre entre 5:00 y 6:30: si el calor te sube el pulso, la cinta baja y no pasa nada. 5′ de calma a 9,5; al acabar, la cinta baja sola a paso de andar. Inclinación, la que marques tú (0 %).",
-      "bajada_s": 20,
-      "pasos": [
-        {
-          "tipo": "calentamiento",
-          "min": 5,
-          "kmh": 10.0
-        },
-        {
-          "tipo": "rodaje",
-          "min": 30,
-          "ritmo": "5:30",
-          "pulso": {
-            "fin": 138,
-            "rapido": "5:00",
-            "lento": "6:30"
-          }
-        },
-        {
-          "tipo": "calma",
-          "min": 5,
-          "kmh": 9.5
-        }
-      ]
-    },
-    {
-      "id": "rodaje-facil-pulso-60",
-      "nombre": "Rodaje fácil · 60′ por pulso",
-      "nota": "Rodaje fácil entre la clave del miércoles y la vara del sábado. 5′ suaves a 10,0 y 50′ por pulso: arranca a 5:30 (10,9 km/h), 2′ sin tocar y después la app ajusta para que el pulso suba poco a poco de 133 a 138 al final, tu zona de fácil aunque el sótano apriete. El ritmo es libre entre 5:00 y 6:30: si el calor te sube el pulso, la cinta baja y no pasa nada. 5′ de calma a 9,5; al acabar, la cinta baja sola a paso de andar. Inclinación, la que marques tú (0 %).",
+      "id": "rodaje-transicion-pulso",
+      "nombre": "Rodaje de transición · hasta 60′ por pulso",
+      "nota": "Rodaje fácil entre dos claves, para el día que no sabes cuánto tiempo tienes. 5′ suaves a 10,0 y hasta 50′ por pulso: arranca a 5:30 (10,9 km/h), 2′ sin tocar y después la app ajusta para que el pulso suba poco a poco de 133 a 138, tu zona de fácil aunque el sótano apriete. El ritmo es libre entre 5:00 y 6:30. Cuando quieras acabar, pulsa «Siguiente»: pasa a los 5′ de calma a 9,5 y al final la cinta baja sola a paso de andar. Si tienes prisa, «Terminar» (dos toques) y se guarda igual, con lo que hayas hecho. Inclinación, la que marques tú (0 %).",
       "bajada_s": 20,
       "pasos": [
         {
