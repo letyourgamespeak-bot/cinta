@@ -17,6 +17,7 @@ Arrancar, pausar y parar se hacen siempre con los botones de la cinta.
 
 En los bloques largos con `pulso` en `entrenos.json`, la velocidad la lleva el pulso (`control_pulso.js`): 2′ sin
 tocar, luego cada 40″ ±0,1 (o −0,2) para acabar el bloque en `fin`; nunca más rápido que `rapido` ni más lento que
-`lento`; sin pulso, velocidad quieta; si toca él ±0,1, espera 40″. `heredar` arranca el bloque a la velocidad con que
-acabó el anterior. Al terminar el entreno, la cinta baja sola a 6 km/h. Prueba con atleta simulado:
+`lento`; sin pulso, velocidad quieta; si toca él ±0,1, espera 40″. `heredar` arranca el bloque a la velocidad MEDIA
+del anterior (hasta el 2026-11-23, la final: ese día el 2.º bloque del 2×10′ arrancó en el raíl rápido y el pulso llegó
+a 181 con techo 177). Al terminar el entreno, la cinta baja sola a 6 km/h. Prueba con atleta simulado:
 `node prueba_control.mjs`. El FIT lleva el nombre del entreno (deporte, workout y sesión) y las calorías.
