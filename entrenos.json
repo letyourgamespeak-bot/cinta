@@ -11,7 +11,7 @@
     {
       "id": "ritmo10k-2x10-pulso",
       "nombre": "Ritmo 10K · 2×10′ por pulso",
-      "nota": "Clave del Plan (2×10′ a ritmo de 10K, máx. 177 ppm), en cinta y por pulso. 51′ en total (lo pediste el 22-11: al menos 50′). 15′ de calentamiento solo (10′ a 10,5 y 5′ a 11,5). La 1.ª arranca a 3:51 (15,6 km/h) y la 2.ª a la velocidad con que acabó la 1.ª; 2′ sin tocar y después la app ajusta para acabar la 1.ª a 175 y la 2.ª a 177, el techo. Manda el pulso: el ritmo es libre y solo tiene un raíl, nunca más rápido que 3:35 (el ritmo de VO2, el sistema de encima) ni más lento que 4:20. 3′ de trote a 9,0 entre bloques y 10′ de calma; al acabar, la cinta baja sola a paso de andar. La inclinación, la que marques tú (0 %).",
+      "nota": "Clave del Plan (2×10′ a ritmo de 10K, máx. 177 ppm), en cinta y por pulso. 51′ en total (lo pediste el 22-11: al menos 50′). 15′ de calentamiento solo (10′ a 10,5 y 5′ a 11,5). La 1.ª arranca a 3:51 (15,6 km/h) y la 2.ª a la velocidad media de la 1.ª; 2′ sin tocar y después la app ajusta para acabar la 1.ª a 175 y la 2.ª a 177, el techo. Manda el pulso: el ritmo es libre y solo tiene un raíl, nunca más rápido que 3:35 (el ritmo de VO2, el sistema de encima) ni más lento que 4:20. 3′ de trote a 9,0 entre bloques y 10′ de calma; al acabar, la cinta baja sola a paso de andar. La inclinación, la que marques tú (0 %).",
       "bajada_s": 20,
       "pasos": [
         {
@@ -59,7 +59,7 @@
     {
       "id": "ritmo15k-2x15-pulso",
       "nombre": "Ritmo 15K · 2×15′ por pulso",
-      "nota": "Clave del Plan (2×15′ a ritmo de 15K, máx. 173 ppm), en cinta y por pulso. 12′ de calentamiento solo (8′ a 10,5 y 4′ a 11,5). La 1.ª arranca a 4:00 (15,0 km/h) y la 2.ª a la velocidad con que acabó la 1.ª; 2′ sin tocar y después la app ajusta para acabar la 1.ª a 168 y la 2.ª a 171: dentro de tu zona de ritmo de 15K (164-172) y por debajo del techo. Manda el pulso: el ritmo es libre y solo tiene un raíl, nunca más rápido que 3:51 (el ritmo de 10K, el sistema de encima) ni más lento que 4:30. 3′ de trote a 9,0 entre bloques y 8′ de calma; al acabar, la cinta baja sola a paso de andar. La inclinación, la que marques tú (0 %).",
+      "nota": "Clave del Plan (2×15′ a ritmo de 15K, máx. 173 ppm), en cinta y por pulso. 12′ de calentamiento solo (8′ a 10,5 y 4′ a 11,5). La 1.ª arranca a 4:00 (15,0 km/h) y la 2.ª a la velocidad media de la 1.ª; 2′ sin tocar y después la app ajusta para acabar la 1.ª a 168 y la 2.ª a 171: dentro de tu zona de ritmo de 15K (164-172) y por debajo del techo. Manda el pulso: el ritmo es libre y solo tiene un raíl, nunca más rápido que 3:51 (el ritmo de 10K, el sistema de encima) ni más lento que 4:30. 3′ de trote a 9,0 entre bloques y 8′ de calma; al acabar, la cinta baja sola a paso de andar. La inclinación, la que marques tú (0 %).",
       "bajada_s": 20,
       "pasos": [
         {

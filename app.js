@@ -255,7 +255,7 @@ function empezar() {
   sesion = { id: t, nombre: elegido.nombre, inicio: t, muestras: [], vueltas: [], distBase: cinta.dato.dist ?? 0 };
   motor = { pasos, i: -1, bajada: (elegido.bajada_s ?? 20) * 1000, pausado: false, ceroDesde: null, activoPaso: 0, ultimo: t,
             pitado: 99, ultimaMuestra: 0, ultimoEnvio: 0, enviado: null, rampa: null, reaplicar: 0, terminado: false, distSim: 0,
-            fcEstado: { ultimo: null }, velHeredada: null, ultAlarma: -1e9, motivo: "" };
+            fcEstado: { ultimo: null }, velHeredada: null, velSuma: 0, velT: 0, ultAlarma: -1e9, motivo: "" };
   sesion.ajustes = [];
   avanzar();
   mostrar("entreno");
@@ -288,15 +288,18 @@ function avanzar() {
   const t = ahora(), M = motor;
   if (M.i >= 0) {
     const p = M.pasos[M.i];
-    if (p.pulso) M.velHeredada = objetivo();
+    // La MEDIA del bloque, no la velocidad final (cambiado el 2026-11-23): el 2×10′ de ese día acabó el 1.º a 16,7 (el
+    // raíl rápido, el pulso aún iba subiendo) con una media de 16,0; el 2.º arrancó a 16,7 y el pulso llegó a 181 con techo
+    // 177. Con la media, el 2.º arranca donde el 1.º de verdad se corrió y el control afina desde ahí.
+    if (p.pulso) M.velHeredada = M.velT > 0 ? r1(M.velSuma / M.velT) : objetivo();
     sesion.vueltas.push({ inicio: M.inicioPaso, fin: t, nombre: p.nombre, disparo: p.libre ? "manual" : p.m ? "distancia" : "tiempo" });
   }
   M.i++;
   if (M.i >= M.pasos.length) return completar();
   const p = M.pasos[M.i], ant = M.pasos[M.i - 1];
   M.inicioPaso = t; M.activoPaso = 0; M.distInicioPaso = distSesion(); M.pitado = 99; M.ajuste = 0;
-  M.rampa = null; M.fcEstado = { ultimo: null }; M.motivo = "";
-  // Un bloque con «heredar» empieza a la velocidad a la que acabó el anterior controlado por pulso.
+  M.rampa = null; M.fcEstado = { ultimo: null }; M.motivo = ""; M.velSuma = 0; M.velT = 0;
+  // Un bloque con «heredar» empieza a la velocidad MEDIA del anterior controlado por pulso.
   if (p.heredar && p.kmh && M.velHeredada) M.ajuste = r1(M.velHeredada - p.kmh);
   if (p.kmh) {
     const meta = limitar(p.kmh + M.ajuste);
@@ -350,6 +353,7 @@ function tick() {
 
   // Control por pulso: la velocidad la lleva el pulso (control_pulso.js).
   if (p.pulso && p.kmh && !M.rampa && !M.pausado) {
+    M.velSuma += objetivo() * dt; M.velT += dt;
     const ult = sesion.muestras.slice(-10).map(x => x[3]).filter(x => x > 0);
     const fcMed = ult.length >= 5 ? Math.round(ult.reduce((a, b) => a + b) / ult.length) : null;
     const r = decidir({ t: t / 1000, tPaso: M.activoPaso / 1000, durPaso: p.s || 600, fc: fcMed, vel: objetivo(),
