@@ -182,7 +182,7 @@ function expandir(entreno) {
 function duracionEstimada(pasos) {
   let s = 0, libres = 0;
   for (const p of pasos) { if (p.libre) libres++; else if (p.s) s += p.s; else if (p.m && p.kmh) s += p.m / (p.kmh / 3.6); }
-  return mmss(s).replace(/:\d\d$/, "") + " min" + (libres ? " + " + libres + " libre" + (libres > 1 ? "s" : "") : "");
+  return Math.round(s / 60) + " min" + (libres ? " + " + libres + " libre" + (libres > 1 ? "s" : "") : "");
 }
 
 function describirPaso(p) {
