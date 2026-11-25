@@ -19,5 +19,7 @@ En los bloques largos con `pulso` en `entrenos.json`, la velocidad la lleva el p
 tocar, luego cada 40″ ±0,1 (o −0,2) para acabar el bloque en `fin`; nunca más rápido que `rapido` ni más lento que
 `lento`; sin pulso, velocidad quieta; si toca él ±0,1, espera 40″. `heredar` arranca el bloque a la velocidad MEDIA
 del anterior (hasta el 2026-11-23, la final: ese día el 2.º bloque del 2×10′ arrancó en el raíl rápido y el pulso llegó
-a 181 con techo 177). Al terminar el entreno, la cinta baja sola a 6 km/h. Prueba con atleta simulado:
+a 181 con techo 177). `salida` (desde el 2026-11-25) da una salida rápida solo al 1.er bloque: `mas_kmh` por encima y
+`s` segundos sin control (el freno de emergencia sigue): en el 2×10′ del 23-11 el 1.er bloque subió el pulso 142→171 sin
+entrar en la zona ni un minuto, y el 2.º, que arrancó más rápido, pasó ~8′ en ella. Al terminar el entreno, la cinta baja sola a 6 km/h. Prueba con atleta simulado:
 `node prueba_control.mjs`. El FIT lleva el nombre del entreno (deporte, workout y sesión) y las calorías.

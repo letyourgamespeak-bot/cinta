@@ -153,6 +153,15 @@ const pulso = SIMULAR ? new PulsoSimulado() : new PulsoBLE();
 // ---------- biblioteca ----------
 const NOMBRE_TIPO = { calentamiento: "Calentamiento", serie: "Serie", recuperacion: "Recuperación", calma: "Vuelta a la calma", cuesta: "Cuesta", rodaje: "Rodaje" };
 
+// Salida rápida (2026-11-25, por él: lo vio en un Zwift de umbral). Solo el 1.er bloque de una repetición: arranca
+// «mas_kmh» por encima durante «s» segundos y el control por pulso no lo toca hasta entonces (el freno de emergencia,
+// sí). En el 2×10′ del 23-11 el 1.er bloque subió el pulso 142→171 en 10′ sin entrar en la zona (≥173) ni un minuto;
+// el 2.º, que arrancó más rápido y caliente, pasó ~8′ en zona. En cinta manda el pulso, y el pulso llega tarde.
+function salidaDe(p, i) {
+  const r = p.pulso && p.pulso.salida;
+  return r && i === 1 ? { mas: r.mas_kmh, s: r.s } : null;
+}
+
 function expandir(entreno) {
   const lista = [];
   const meter = (p, i, n) => {
@@ -167,8 +176,9 @@ function expandir(entreno) {
         fin: Array.isArray(p.pulso.fin) ? p.pulso.fin[Math.min(i, p.pulso.fin.length) - 1] : p.pulso.fin,
         vmax: p.pulso.rapido ? Math.floor(kmhDeRitmo(p.pulso.rapido) * 10) / 10 : 18,
         vmin: p.pulso.lento ? Math.ceil(kmhDeRitmo(p.pulso.lento) * 10) / 10 : 1,
-        desde: p.pulso.desde_s ?? 120,
+        desde: Math.max(p.pulso.desde_s ?? 120, salidaDe(p, i)?.s ?? 0),
       } : null,
+      salida: salidaDe(p, i),
     });
   };
   const recorrer = (pasos, i, n) => pasos.forEach(p => {
@@ -188,7 +198,8 @@ function duracionEstimada(pasos) {
 function describirPaso(p) {
   const dur = p.libre ? "libre" : p.s ? mmss(p.s) : p.m ? (p.m >= 1000 ? coma(p.m / 1000, 2) + " km" : p.m + " m") : "";
   const int = p.kmh ? `${p.heredar ? "desde " : ""}${coma(p.kmh)} km/h · ${ritmoDeKmh(p.kmh)}/km` : "a tu aire";
-  const fc = p.pulso ? ` · por pulso: acaba en ${p.pulso.fin} (entre ${ritmoDeKmh(p.pulso.vmax)} y ${ritmoDeKmh(p.pulso.vmin)})` : "";
+  const sal = p.salida && p.kmh ? ` · sale a ${coma(p.kmh + p.salida.mas)} (${ritmoDeKmh(p.kmh + p.salida.mas)}) ${Math.round(p.salida.s / 60)}′` : "";
+  const fc = p.pulso ? `${sal} · por pulso: acaba en ${p.pulso.fin} (entre ${ritmoDeKmh(p.pulso.vmax)} y ${ritmoDeKmh(p.pulso.vmin)})` : "";
   return `${dur} · ${int}${p.incl ? " · " + p.incl + " %" : ""}${fc}`;
 }
 
@@ -301,6 +312,7 @@ function avanzar() {
   M.rampa = null; M.fcEstado = { ultimo: null }; M.motivo = ""; M.velSuma = 0; M.velT = 0;
   // Un bloque con «heredar» empieza a la velocidad MEDIA del anterior controlado por pulso.
   if (p.heredar && p.kmh && M.velHeredada) M.ajuste = r1(M.velHeredada - p.kmh);
+  else if (p.salida && p.kmh) M.ajuste = r1(p.salida.mas);
   if (p.kmh) {
     const meta = limitar(p.kmh + M.ajuste);
     const desde = cinta.dato.vel || (ant && ant.kmh) || meta;
